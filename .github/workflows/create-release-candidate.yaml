@@ -47,6 +47,7 @@ jobs:
           branch: release
           branch-suffix: short-commit-hash
           delete-branch: true
+          base: main
           commit-message: 'chore(release): v${{ steps.extract-version.outputs.VERSION }}'
           title: '[Release] v${{ steps.extract-version.outputs.VERSION }}'
           labels: |
