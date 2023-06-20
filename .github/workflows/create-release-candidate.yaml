@@ -44,7 +44,8 @@ jobs:
         uses: peter-evans/create-pull-request@v4
         id: cpr
         with:
-          branch: 'release/${{ steps.extract-version.outputs.VERSION }}'
+          branch: release
+          branch-suffix: short-commit-hash
           delete-branch: true
           commit-message: 'chore(release): v${{ steps.extract-version.outputs.VERSION }}'
           title: '[Release] v${{ steps.extract-version.outputs.VERSION }}'
