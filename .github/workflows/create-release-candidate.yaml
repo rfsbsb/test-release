@@ -29,8 +29,27 @@ jobs:
 
       - name: Install dependencies
         run: npm install
+
       - name: Prepare release
         env:
           RELEASE_TOKEN: ${{ secrets.RELEASE_TOKEN }}
           TYPE_ARG: ${{ fromJSON('{"":"", "auto":"", "patch":"--patch", "minor":"--minor", "major":"--major"}')[github.event.inputs.increment] }}
-        run: npm run release -- --ci --verbose $TYPE_ARG
+        run: npm run release -- --ci --github.draft true --verbose $TYPE_ARG
+
+      - name: get-npm-version
+        id: package-version
+        uses: martinbeentjes/npm-get-version-action@main
+
+      - name: Create pull request
+        uses: peter-evans/create-pull-request@v4
+        id: cpr
+        with:
+          branch: 'release/${{ steps.package-version.outputs.current-version}}'
+          delete-branch: true
+          commit-message: 'chore(release): v${{ steps.package-version.outputs.current-version}}'
+          title: '[Release] v${{ steps.package-version.outputs.current-version}}'
+          labels: |
+            release
+            automated pr
+          signoff: false
+          draft: false
