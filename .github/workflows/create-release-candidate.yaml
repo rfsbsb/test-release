@@ -36,18 +36,18 @@ jobs:
           TYPE_ARG: ${{ fromJSON('{"":"", "auto":"", "patch":"--patch", "minor":"--minor", "major":"--major"}')[github.event.inputs.increment] }}
         run: npm run release -- --ci --github.draft true --verbose $TYPE_ARG
 
-      - name: get-npm-version
-        id: package-version
-        uses: martinbeentjes/npm-get-version-action@main
+      - name: Extract version from package.json
+        id: extract-version
+        run: echo "VERSION=$(jq -r '.version' package.json)" >> $GITHUB_OUTPUT
 
       - name: Create pull request
         uses: peter-evans/create-pull-request@v4
         id: cpr
         with:
-          branch: 'release/${{ steps.package-version.outputs.current-version}}'
+          branch: 'release/${{ steps.extract-version.outputs.VERSION }}'
           delete-branch: true
-          commit-message: 'chore(release): v${{ steps.package-version.outputs.current-version}}'
-          title: '[Release] v${{ steps.package-version.outputs.current-version}}'
+          commit-message: 'chore(release): v${{ steps.extract-version.outputs.VERSION }}'
+          title: '[Release] v${{ steps.extract-version.outputs.VERSION }}'
           labels: |
             release
             automated pr
