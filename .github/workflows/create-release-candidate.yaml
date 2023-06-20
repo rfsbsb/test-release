@@ -41,17 +41,6 @@ jobs:
         run: echo "VERSION=$(jq -r '.version' package.json)" >> $GITHUB_OUTPUT
 
       - name: Create pull request
-        uses: peter-evans/create-pull-request@v4
-        id: cpr
-        with:
-          branch: release
-          branch-suffix: short-commit-hash
-          delete-branch: true
-          base: main
-          commit-message: 'chore(release): v${{ steps.extract-version.outputs.VERSION }}'
-          title: '[Release] v${{ steps.extract-version.outputs.VERSION }}'
-          labels: |
-            release
-            automated pr
-          signoff: false
-          draft: false
+        run: gh pr create -B develop -H main --title '[Release] v${{ steps.extract-version.outputs.VERSION }}' --body 'Created by Github action'
+        env:
+          GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
