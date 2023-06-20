@@ -1,0 +1,74 @@
+name: Publish pre-release
+
+on:
+  push:
+    branches:
+      - "develop"
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment Dev|Staging'
+        options:
+          - dev
+          - staging
+          - both
+        required: true
+        type: choice
+        default: 'both'
+jobs:
+  test-and-build:
+    name: Test and build
+    runs-on: [self-hosted, default]
+    steps:
+    - name: Linting
+      run: |
+        echo "Lint was executed"
+    - name: Testing
+      run: |
+        echo "Tests were executed"
+    - name: Generate coverage
+      run: |
+        echo "Coverage generated"
+    - name: Calculate coverage
+      run: |
+        echo "Coverage calculated"
+  publish:
+    name: Publish pre-release
+    needs:
+      - test-and-build
+    runs-on: [self-hosted, default]
+    env:
+      DEPLOY_ENV: ${{ github.event.inputs.environment }}
+      RELEASE_VERSION: ""
+    steps:
+      - if: ${{ github.event.inputs.environment == ''}}
+        name: Sets default deploy env
+        run: echo "DEPLOY_ENV=both" >> $GITHUB_ENV
+
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+
+      - name: git config
+        run: |
+          git config user.name "${GITHUB_ACTOR}"
+          git config user.email "${GITHUB_ACTOR}@users.noreply.github.com"
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Tag and do dev release
+        id: tagging-version
+        run: |
+          npm run release --silent -- --ci --no-github --patch --config=.release-it-pre.json --preRelease=pre-release
+          echo "RELEASE_VERSION=$(npm run release --silent -- --ci --release-version  --no-github --patch --preRelease=pre-release)" >> $GITHUB_OUTPUT
+        env:
+          RELEASE_TOKEN: ${{ secrets.RELEASE_TOKEN }}
+
+      - name: Publish Docker image
+        run: |
+          echo "Docker Image published to ${{ env.DEPLOY_ENV }} with ${{ steps.tagging-version.outputs.RELEASE_VERSION }}"
+      - name: Deploy Image
+        run: |
+          echo "Deploy image executed to ${{ env.DEPLOY_ENV }} with ${{ steps.tagging-version.outputs.RELEASE_VERSION }}"

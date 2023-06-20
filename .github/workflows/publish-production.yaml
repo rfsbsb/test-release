@@ -1,0 +1,35 @@
+name: Publish production
+
+on:
+  push:
+    branches:
+      - "main"
+  workflow_dispatch:
+jobs:
+  publish:
+    name: Publish production
+    runs-on: [self-hosted, default]
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+
+      - name: git config
+        run: |
+          git config user.name "${GITHUB_ACTOR}"
+          git config user.email "${GITHUB_ACTOR}@users.noreply.github.com"
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Extract version from package.json
+        id: extract-version
+        run: echo "VERSION=$(jq -r '.version' package.json)" >> $GITHUB_OUTPUT
+
+      - name: Publish Docker image
+        run: |
+          echo "Docker Image published to production with ${{ steps.extract-version.outputs.VERSION }}"
+      - name: Deploy Image
+        run: |
+          echo "Deploy image executed to production with ${{ steps.extract-version.outputs.VERSION }}"

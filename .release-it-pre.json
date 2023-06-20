@@ -1,0 +1,11 @@
+{
+  "git": {
+    "commitMessage": "chore: pre-release v${version}"
+  },
+  "github": {
+    "tokenRef": "RELEASE_TOKEN"
+  },
+  "npm": {
+    "publish": false
+  }
+}

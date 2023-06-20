@@ -1,0 +1,14 @@
+{
+  "git": {
+    "commitMessage": "chore: release v${version}"
+  },
+  "github": {
+    "release": true,
+    "web": false,
+    "autoGenerate": true,
+    "tokenRef": "RELEASE_TOKEN"
+  },
+  "npm": {
+    "publish": false
+  }
+}

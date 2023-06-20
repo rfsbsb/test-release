@@ -1,0 +1,36 @@
+name: Create Production Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      increment:
+        description: 'major|minor|patch'
+        options:
+          - patch
+          - minor
+          - major
+        required: true
+        type: choice
+        default: 'minor'
+jobs:
+  publish:
+    name: Create release PR
+    runs-on: [self-hosted, default]
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+
+      - name: git config
+        run: |
+          git config user.name "${GITHUB_ACTOR}"
+          git config user.email "${GITHUB_ACTOR}@users.noreply.github.com"
+
+      - name: Install dependencies
+        run: npm install
+      - name: Prepare release
+        env:
+          RELEASE_TOKEN: ${{ secrets.RELEASE_TOKEN }}
+          TYPE_ARG: ${{ fromJSON('{"":"", "auto":"", "patch":"--patch", "minor":"--minor", "major":"--major"}')[github.event.inputs.increment] }}
+        run: npm run release -- --ci --verbose $TYPE_ARG
