@@ -14,7 +14,7 @@ on:
         default: 'minor'
 jobs:
   publish:
-    name: Create release PR
+    name: Create release
     runs-on: [self-hosted, default]
     steps:
       - uses: actions/checkout@v3
@@ -33,21 +33,4 @@ jobs:
         env:
           RELEASE_TOKEN: ${{ secrets.RELEASE_TOKEN }}
           TYPE_ARG: ${{ fromJSON('{"":"", "auto":"", "patch":"--patch", "minor":"--minor", "major":"--major"}')[github.event.inputs.increment] }}
-        run: npm run release -- --ci --verbose --no-git.commit --no-github $TYPE_ARG
-      - name: Extract version from package.json
-        id: extract-version
-        run: echo "VERSION=$(jq -r '.version' package.json)" >> $GITHUB_OUTPUT
-
-      - name: Create pull request
-        uses: peter-evans/create-pull-request@v4
-        id: cpr
-        with:
-          branch: release-${{ steps.extract-version.outputs.VERSION }}
-          delete-branch: true
-          commit-message: 'chore(release): v${{ steps.package-version.outputs.current-version}}'
-          title: '[Release] v${{ steps.package-version.outputs.current-version}}'
-          labels: |
-            release
-            automated pr
-          signoff: false
-          draft: false
+        run: npm run release -- --ci --verbose $TYPE_ARG
