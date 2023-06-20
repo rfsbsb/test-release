@@ -1,6 +1,6 @@
 {
   "name": "test-express",
-  "version": "0.0.2-pre-release.2",
+  "version": "0.0.2",
   "private": true,
   "scripts": {
     "start": "node ./bin/www",
