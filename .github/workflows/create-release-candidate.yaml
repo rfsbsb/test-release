@@ -41,7 +41,9 @@ jobs:
         run: echo "VERSION=$(jq -r '.version' package.json)" >> $GITHUB_OUTPUT
 
       - name: Create release branch
-        run: git checkout -b release-${{ steps.extract-version.outputs.VERSION }}
+        run: |
+          git checkout -b release-${{ steps.extract-version.outputs.VERSION }}
+          git push origin release-${{ steps.extract-version.outputs.VERSION }}
 
       - name: Create pull request
         run: gh pr create -B main -H release-${{ steps.extract-version.outputs.VERSION }} --title '[Release] v${{ steps.extract-version.outputs.VERSION }}' --body 'Created by Github action'
