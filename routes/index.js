@@ -16,9 +16,4 @@ router.get('/second', function(req, res, next) {
   res.render('second', { title: 'Second page' });
 });
 
-/* GET second page. */
-router.get('/release', function(req, res, next) {
-  res.render('with-release', { title: 'With Release we can do anything' });
-});
-
 module.exports = router;

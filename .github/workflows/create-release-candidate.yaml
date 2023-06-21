@@ -14,7 +14,7 @@ on:
         default: 'minor'
 jobs:
   publish:
-    name: Create release PR
+    name: Create release
     runs-on: [self-hosted, default]
     steps:
       - uses: actions/checkout@v3
@@ -29,8 +29,23 @@ jobs:
 
       - name: Install dependencies
         run: npm install
+
       - name: Prepare release
         env:
           RELEASE_TOKEN: ${{ secrets.RELEASE_TOKEN }}
           TYPE_ARG: ${{ fromJSON('{"":"", "auto":"", "patch":"--patch", "minor":"--minor", "major":"--major"}')[github.event.inputs.increment] }}
-        run: npm run release -- --ci --verbose $TYPE_ARG
+        run: npm run release -- --ci --github.draft --verbose $TYPE_ARG
+
+      - name: Extract version from package.json
+        id: extract-version
+        run: echo "VERSION=$(jq -r '.version' package.json)" >> $GITHUB_OUTPUT
+
+      - name: Create release branch
+        run: |
+          git checkout -b release-${{ steps.extract-version.outputs.VERSION }}
+          git push origin release-${{ steps.extract-version.outputs.VERSION }}
+
+      - name: Create pull request
+        run: gh pr create -B main -H release-${{ steps.extract-version.outputs.VERSION }} --title '[Release] v${{ steps.extract-version.outputs.VERSION }}' --body 'Created by Github action'
+        env:
+          GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}

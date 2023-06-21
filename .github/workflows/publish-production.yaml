@@ -27,6 +27,9 @@ jobs:
         id: extract-version
         run: echo "VERSION=$(jq -r '.version' package.json)" >> $GITHUB_OUTPUT
 
+      - name: Publish release
+        run: gh release edit ${{ steps.extract-version.outputs.VERSION }} --draft=false
+
       - name: Publish Docker image
         run: |
           echo "Docker Image published to production with ${{ steps.extract-version.outputs.VERSION }}"
