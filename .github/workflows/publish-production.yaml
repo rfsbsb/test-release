@@ -29,6 +29,8 @@ jobs:
 
       - name: Publish release
         run: gh release edit ${{ steps.extract-version.outputs.VERSION }} --draft=false
+        env:
+          GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
 
       - name: Publish Docker image
         run: |
