@@ -33,8 +33,7 @@ jobs:
       - name: Prepare release
         env:
           RELEASE_TOKEN: ${{ secrets.RELEASE_TOKEN }}
-          TYPE_ARG: ${{ fromJSON('{"":"", "auto":"", "patch":"--patch", "minor":"--minor", "major":"--major"}')[github.event.inputs.increment] }}
-        run: npm run release -- --ci --github.draft --verbose $TYPE_ARG
+        run: npm run release -- --ci --github.draft --verbose --increment=${{ github.event.inputs.increment }}
 
       - name: Extract version from package.json
         id: extract-version
