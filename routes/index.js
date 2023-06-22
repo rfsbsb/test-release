@@ -21,4 +21,9 @@ router.get('/third', function(req, res, next) {
   res.render('third', { title: 'Third page' });
 });
 
+/* GET 4th page. */
+router.get('/4th', function(req, res, next) {
+  res.render('4th', { title: '4th page' });
+});
+
 module.exports = router;
