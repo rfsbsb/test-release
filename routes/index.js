@@ -16,4 +16,9 @@ router.get('/second', function(req, res, next) {
   res.render('second', { title: 'Second page' });
 });
 
+/* GET second page. */
+router.get('/third', function(req, res, next) {
+  res.render('third', { title: 'Third page' });
+});
+
 module.exports = router;
